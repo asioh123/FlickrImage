@@ -1,9 +1,12 @@
 package com.example.assy.flickrimage;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -22,32 +25,32 @@ public class MainActivity extends AppCompatActivity {
 
         mainListView = (ListView) findViewById( R.id.mainListView );
 
-        // Create and populate a List of planet names.
-        String[] planets = new String[] { "Mercury", "Venus", "Earth", "Mars",
-                "Jupiter", "Saturn", "Uranus", "Neptune"};
-        ArrayList<String> planetList = new ArrayList<String>();
-        planetList.addAll( Arrays.asList(planets) );
+
+        String[] Values = new String[] { "dog", "cat", "car", "flag",
+                "baby", "israel", "france", "sea"};
+        ArrayList<String> ValuesList = new ArrayList<String>();
+        ValuesList.addAll( Arrays.asList(Values) );
 
         // Create ArrayAdapter using the planet list.
-        listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, planetList);
+        listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, ValuesList);
 
-        // Add more planets. If you passed a String[] instead of a List<String>
-        // into the ArrayAdapter constructor, you must not add more items.
-        // Otherwise an exception will occur.
         listAdapter.add( "Ceres" );
-        listAdapter.add( "Pluto" );
-        listAdapter.add( "Haumea" );
-        listAdapter.add( "Makemake" );
-        listAdapter.add("Eris");
-        listAdapter.add( "Eris" );
-        listAdapter.add( "Eris" );
-        listAdapter.add( "Eris" );
-        listAdapter.add( "Eris" );
-        listAdapter.add( "Eris" );
-        listAdapter.add( "Eris" );
+
 
         // Set the ArrayAdapter as the ListView's adapter.
         mainListView.setAdapter( listAdapter );
+
+
+        mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object listItem = mainListView.getItemAtPosition(position);
+                Intent i = new Intent(getApplicationContext(),Main2Activity.class);
+                i.putExtra("value", listItem.toString());
+                startActivity(i);
+                setContentView(R.layout.activity_main2);
+            }
+        });
 
     }
 
