@@ -1,18 +1,28 @@
 package com.example.assy.flickrimage;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main2Activity extends AppCompatActivity {
 
     TextView val;
     Button backBtn;
+    TextView outPot;
+    ProgressBar pb;
+    List<MyTask> tasks;
+    List<Images> ImagesList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +33,15 @@ public class Main2Activity extends AppCompatActivity {
 
         val = (TextView)findViewById(R.id.textView);
         backBtn = (Button)findViewById(R.id.button);
-        val.setText(fName);
+        val.setMovementMethod(new ScrollingMovementMethod());
+
+        pb= (ProgressBar)findViewById(R.id.progressBar);
+        pb.setVisibility(View.INVISIBLE);
+
+        tasks = new ArrayList<>();
+
+        requesData("https://api.flickr.com/services/rest/?method=flickr.photos.search&per_page=3&nojsoncallback=1&format=json&tags=animal&api_key=69c5d7d1ba5bc26bb87acfea53ed71fd");
+
     }
 
     @Override
@@ -53,5 +71,58 @@ public class Main2Activity extends AppCompatActivity {
         Intent i = new Intent(getApplicationContext(),MainActivity.class);
         startActivity(i);
         setContentView(R.layout.activity_main);
+    }
+
+
+    protected void requesData(String uri)
+    {
+        MyTask task = new MyTask();
+        task.execute(uri);
+
+    }
+
+    protected void updateDispaly()
+    {
+        if(ImagesList!=null)
+        {
+            for(Images image : ImagesList)
+            {
+                val.append(image.getId() + "  " + image.getOwner() + "  "  + "\n");
+            }
+        }
+    }
+
+
+    private class MyTask extends AsyncTask<String,String,String>
+    {
+        protected void onPreExecute()
+        {
+
+            if(tasks.size()==0)
+            {
+                pb.setVisibility(View.VISIBLE);
+            }
+            tasks.add(this);
+        }
+
+        protected String doInBackground(String ... params)
+        {
+            String content = Connect.getData(params[0]);
+            return content;
+        }
+
+        protected void onPostExecute(String result)
+        {
+
+            ImagesList = jsonParse.parseFeed(result);
+            updateDispaly();
+
+            tasks.remove(this);
+            if(tasks.size()==0)
+            {
+                pb.setVisibility(View.INVISIBLE);
+            }
+        }
+
     }
 }
