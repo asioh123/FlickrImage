@@ -1,6 +1,7 @@
 package com.example.assy.flickrimage;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,7 +10,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,12 +20,17 @@ import java.util.List;
 
 public class Main2Activity extends AppCompatActivity {
 
-    TextView val;
+
     Button backBtn;
-    TextView outPot;
     ProgressBar pb;
     List<MyTask> tasks;
     List<Images> ImagesList;
+    private GridView gridView;
+    private GridviewAdapter gridAdapter;
+    String[] items = new String[500] ;
+    RelativeLayout mealLayout ;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,18 +39,24 @@ public class Main2Activity extends AppCompatActivity {
         Intent intent = getIntent();
         String fName = intent.getStringExtra("value");
 
-        val = (TextView)findViewById(R.id.textView);
-        backBtn = (Button)findViewById(R.id.button);
-        val.setMovementMethod(new ScrollingMovementMethod());
-
-        pb= (ProgressBar)findViewById(R.id.progressBar);
-        pb.setVisibility(View.INVISIBLE);
+        addItems();
 
         tasks = new ArrayList<>();
 
-        requesData("https://api.flickr.com/services/rest/?method=flickr.photos.search&per_page=3&nojsoncallback=1&format=json&tags=animal&api_key=69c5d7d1ba5bc26bb87acfea53ed71fd");
+        requesData("https://api.flickr.com/services/rest/?method=flickr.photos.search&per_page=500&nojsoncallback=1&format=json&tags="+fName+"&api_key=69c5d7d1ba5bc26bb87acfea53ed71fd");
 
     }
+
+    public void addItems()
+    {
+        mealLayout=(RelativeLayout) findViewById(R.id.activityLayout);
+        mealLayout.setBackgroundColor(Color.BLACK);
+        gridView = (GridView) findViewById(R.id.gridView);
+        backBtn = (Button)findViewById(R.id.button);
+        pb= (ProgressBar)findViewById(R.id.progressBar);
+        pb.setVisibility(View.INVISIBLE);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,15 +94,28 @@ public class Main2Activity extends AppCompatActivity {
         task.execute(uri);
 
     }
+    private void getItems()
+    {
+      int count=ImagesList.size();
+      for(int i=0;i<count;i++)
+      {
+          items[i]=ImagesList.get(i).getUrl();
+      }
+      String image = ImagesList.get(0).getUrl();
+    }
+
+
+
 
     protected void updateDispaly()
     {
         if(ImagesList!=null)
         {
-            for(Images image : ImagesList)
-            {
-                val.append(image.getId() + "  " + image.getOwner() + "  "  + "\n");
-            }
+            getItems();
+            gridAdapter = new GridviewAdapter(Main2Activity.this,items );
+
+            //Especificamos el adaptador
+            gridView.setAdapter(gridAdapter);
         }
     }
 
@@ -124,5 +151,14 @@ public class Main2Activity extends AppCompatActivity {
             }
         }
 
+    }
+
+    //function back button
+    public void back(View view)
+    {
+        Intent i = new Intent(getApplicationContext(),MainActivity.class);
+
+        startActivity(i);
+        setContentView(R.layout.activity_main);
     }
 }

@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -17,15 +20,31 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView mainListView ;
     private ArrayAdapter<String> listAdapter ;
+    private Button btnSearch;
+    private EditText txtSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        addingItems();
+
+        listItem();
+
+    }
+
+    public void addingItems()
+    {
         mainListView = (ListView) findViewById( R.id.mainListView );
+        btnSearch=(Button)findViewById(R.id.btnSearch);
+        txtSearch=(EditText)findViewById(R.id.txtSearch);
+        //dont open keyboard auto Edit text
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
 
-
+    public void listItem()
+    {
         String[] Values = new String[] { "dog", "cat", "car", "flag",
                 "baby", "israel", "france", "sea"};
         ArrayList<String> ValuesList = new ArrayList<String>();
@@ -34,12 +53,8 @@ public class MainActivity extends AppCompatActivity {
         // Create ArrayAdapter using the planet list.
         listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, ValuesList);
 
-        listAdapter.add( "Ceres" );
-
-
         // Set the ArrayAdapter as the ListView's adapter.
         mainListView.setAdapter( listAdapter );
-
 
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -51,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                 setContentView(R.layout.activity_main2);
             }
         });
-
     }
 
     @Override
@@ -74,5 +88,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //button search function
+    public void search(View view)
+    {
+        //getValue of the search text
+        String resuelt=txtSearch.getText().toString();
+
+        //move to another activity
+        Intent i = new Intent(getApplicationContext(),Main2Activity.class);
+        i.putExtra("value", resuelt);
+        startActivity(i);
+        setContentView(R.layout.activity_main2);
     }
 }

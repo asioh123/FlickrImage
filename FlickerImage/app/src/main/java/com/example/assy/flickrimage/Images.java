@@ -27,6 +27,7 @@ public Images(String id,String owner,String secret,String server,String farm,Str
     this.ispublic=ispublic;
     this.isfriend=isfriend;
     this.isfamily=isfamily;
+    this.url = "http://farm"+farm+".staticflickr.com/"+server+"/"+id+"_"+secret+".jpg";
 
 
 }
@@ -108,6 +109,10 @@ public Images(String id,String owner,String secret,String server,String farm,Str
     }
 
     public void setUrl(String url) {
-        this.url = url;
+
+
+        this.url = "http://farm"+farm+".staticflickr.com/"+server+"/"+id+"_"+secret+".jpg";
     }
+
+
 }
